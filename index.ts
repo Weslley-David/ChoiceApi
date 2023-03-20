@@ -2,8 +2,8 @@ import { Request, Response, json} from "express"
 const express = require('express')
 const app = express()
 const port = 3000
-
-
+var cors = require('cors')
+app.use(cors())
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello World!')
