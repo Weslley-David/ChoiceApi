@@ -1,75 +1,75 @@
 import { Request, Response, json } from "express"
+import { createClient } from '@supabase/supabase-js'
 const express = require('express')
 const app = express()
 const port = 3000
+const supabase = createClient('https://ntiumkdcisinslmqjmsm.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50aXVta2RjaXNpbnNsbXFqbXNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODA0MzUzNDMsImV4cCI6MTk5NjAxMTM0M30.K-31hijATTCnWv6M5Qh3LwqwtmrTjwTIgLs1KjvkVRA')
 var cors = require('cors')
 app.use(cors())
 app.use(express.json())
 
-class Question {
-  id: number
-  first_alternative: string
-  second_alternative: string
-  prefer_first: number
-  prefer_second: number
-  constructor(id: number, first_alterrnative: string, second_alternative: string, prefer_first: number, prefer_second: number) {
-    this.id = id
-    this.first_alternative = first_alterrnative
-    this.second_alternative = second_alternative
-    this.prefer_first = prefer_first
-    this.prefer_second = prefer_second
-  }
-}
-
-class BankOfQuestion {
-  questions: Question[] = []
-
-  choice_reandom_question() {
-    const indiceAleatorio = Math.floor(Math.random() * this.questions.length);
-    return this.questions[indiceAleatorio];
-  }
-
-  increment_first_alternative_by_id(id: number) {
-    this.questions[id].prefer_first = this.questions[id].prefer_first + 1
-  }
-
-  increment_second_alternative_by_id(id: number) {
-    this.questions[id].prefer_second = this.questions[id].prefer_second + 1
-  }
-}
-
-//microbanco
-
-let question: Question = new Question(0, 'dormir', 'programar', 3, 4)
-let question2: Question = new Question(1, 'dart', 'typescript', 50, 50)
-let question3: Question = new Question(2, 'ser', 'não ser', 3, 2)
-let question4: Question = new Question(3, 'lol', 'cs go', 100, 2)
-
-let bankOfQuestion: BankOfQuestion = new BankOfQuestion();
-bankOfQuestion.questions.push(question)
-bankOfQuestion.questions.push(question2)
-bankOfQuestion.questions.push(question3)
-bankOfQuestion.questions.push(question4)
-
 //endpoints
-app.get('/question', (req: Request, res: Response) => {
-  res.status(200).json(bankOfQuestion.choice_reandom_question())
+app.post('/create', async (req: Request, res: Response) => {
+  try {
+    const { option1, option2 } = req.body
+
+    const { data, error } = await supabase
+      .from('question')
+      .insert({ option1: option1, option2: option2, vote1: 0, vote2: 0 })
+      .select()
+
+    if (error == null) {
+      return res.status(200).json(data)
+    } else {
+      throw new Error()
+    }
+
+  } catch (error) {
+    return res.status(400)
+  }
+
 })
 
-app.post('/vote', (req: Request, res: Response) => {
+app.delete('/delete', async (req: Request, res: Response) => {
   try {
-    const { id, option } = req.body
-    if (option == 1) {
-      bankOfQuestion.increment_first_alternative_by_id(id)
+    const { id } = req.body
+    const { error } = await supabase
+      .from('question')
+      .delete()
+      .eq('id', id)
+    if(error){
+      throw new Error("delete error");
+      
     }
-    else {
-      bankOfQuestion.increment_second_alternative_by_id(id)
-    }
-    res.status(200).json(bankOfQuestion.questions[id])
+    return res.status(200)
   } catch (error) {
-    res.status(400)
+    return res.status(400)
+  }
+}
+)
+
+app.get('/question', async (req: Request, res: Response) => {
+  try {
+    const { data, error } = await supabase
+      .from('question')
+      .select('*')
+      .order('random', { ascending: false })
+      .limit(1)
+
+    if (error) {
+      console.log(error)
+      return res.status(400)
+    } else {
+      console.log(data[0])
+    }
+  } catch (error) {
+    return res.status(400)
   }
 });
+
+// app.patch('/vote', (req: Request, res: Response) => {
+
+// });
 
 
 app.listen(port, () => {
