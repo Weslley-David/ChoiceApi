@@ -1,14 +1,18 @@
-import { Request, Response, json } from "express"
+
 import { createClient } from '@supabase/supabase-js'
-const express = require('express')
+import { Request, Response} from "express"
+
+import express from 'express'
 const app = express()
 const port = 3000
 const supabase = createClient('https://ntiumkdcisinslmqjmsm.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50aXVta2RjaXNpbnNsbXFqbXNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODA0MzUzNDMsImV4cCI6MTk5NjAxMTM0M30.K-31hijATTCnWv6M5Qh3LwqwtmrTjwTIgLs1KjvkVRA')
-var cors = require('cors')
+//const cors = require('cors')
+import cors from 'cors'
 app.use(cors())
 app.use(express.json())
 
 //endpoints
+
 app.post('/create', async (req: Request, res: Response) => {
   try {
     const { option1, option2 } = req.body
@@ -19,7 +23,7 @@ app.post('/create', async (req: Request, res: Response) => {
       .select()
 
     if (error == null) {
-      return res.status(200).json(data)
+      return res.json(data).status(200).send()
     } else {
       throw new Error()
     }
@@ -37,39 +41,52 @@ app.delete('/delete', async (req: Request, res: Response) => {
       .from('question')
       .delete()
       .eq('id', id)
-    if(error){
+    if (error) {
+      console.log(error)
       throw new Error("delete error");
-      
     }
-    return res.status(200)
+    return res.send().status(200)
   } catch (error) {
-    return res.status(400)
+    return res.send().status(400)
   }
 }
 )
 
-app.get('/question', async (req: Request, res: Response) => {
-  try {
-    const { data, error } = await supabase
-      .from('question')
-      .select('*')
-      .order('random', { ascending: false })
-      .limit(1)
+app.get('/', (req: Request, res: Response) => {
+  res.status(200).json({ "message": "working" })
+})
 
-    if (error) {
-      console.log(error)
-      return res.status(400)
+app.get('/question', async (req: Request, res: Response) => {
+  const { data, error } = await supabase.rpc('get_random_question')
+  if (error) {
+    console.log(error)
+    throw new Error("get error");
+  }
+  res.status(200).json(data)
+}
+
+
+);
+
+app.patch('/vote', async (req: Request, res: Response) => {
+  try {
+    const { id, option } = req.body
+    if (option == 1) {
+
+      const { data, error } = await supabase.rpc('update_votes', { id_p: id, field: 'first' })
+      console.log(data, error)
+      return res.status(200).send(data)
     } else {
-      console.log(data[0])
+      const { data, error } = await supabase.rpc('update_votes', { id_p: id, field: 'second' })
+      console.log(data, error)
+      return res.status(200).send(data)
     }
   } catch (error) {
     return res.status(400)
   }
+
+
 });
-
-// app.patch('/vote', (req: Request, res: Response) => {
-
-// });
 
 
 app.listen(port, () => {
