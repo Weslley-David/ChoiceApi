@@ -65,11 +65,11 @@ class Question {
       if (option == 1) {
 
         const { data, error } = await supabase.rpc('update_votes', { id_p: id, field: 'first' })
-        //console.log(data, error)
+        console.log(data, error)
         return res.status(200).send(data)
       } else {
         const { data, error } = await supabase.rpc('update_votes', { id_p: id, field: 'second' })
-        //console.log(data, error)
+        console.log(data, error)
         return res.status(200).send(data)
       }
     } catch (error) {
@@ -97,7 +97,7 @@ class Question {
 
   }
 }
-let question = new Question()
+const question = new Question()
 //endpoints
 
 app.post('/create', question.create)
