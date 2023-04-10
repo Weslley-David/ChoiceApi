@@ -1,11 +1,14 @@
 
 import { createClient } from '@supabase/supabase-js'
 import { Request, Response} from "express"
-
+import * as dotenv from 'dotenv'
 import express from 'express'
+dotenv.config()
 const app = express()
 const port = 3000
-const supabase = createClient('https://ntiumkdcisinslmqjmsm.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50aXVta2RjaXNpbnNsbXFqbXNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODA0MzUzNDMsImV4cCI6MTk5NjAxMTM0M30.K-31hijATTCnWv6M5Qh3LwqwtmrTjwTIgLs1KjvkVRA')
+const base_url: string = process.env.BASE_URL + ""
+const secret_key: string = process.env.SECRET_KEY + ""
+const supabase = createClient(base_url, secret_key)
 //const cors = require('cors')
 import cors from 'cors'
 app.use(cors())
