@@ -95,8 +95,6 @@ class Question {
     } catch (error) {
       return res.status(400)
     }
-
-
   }
 }
 
@@ -121,12 +119,8 @@ class Comment {
     } catch (error) {
       console.log(error)
     }
-
-
-
-
   }
-  
+
   writeComment = async (req: Request, res: Response) => {
     try {
       const { id, content } = req.body
