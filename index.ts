@@ -126,6 +126,7 @@ class Comment {
 
 
   }
+  
   writeComment = async (req: Request, res: Response) => {
     try {
       const { id, content } = req.body
