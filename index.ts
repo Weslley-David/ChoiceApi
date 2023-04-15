@@ -57,6 +57,8 @@ class Question {
       console.log(error)
       throw new Error("get error");
     }
+
+
     res.status(200).json(data)
   }
   vote = async (req: Request, res: Response) => {
@@ -85,8 +87,8 @@ class Question {
       const { data, error } = await supabase
         .from('question')
         .select()
-        .eq('id', id)    // Correct      
-      if(error){
+        .eq('id', id)
+      if (error) {
         return res.status(400).send(error)
       }
       return res.status(200).send(data)
@@ -97,24 +99,76 @@ class Question {
 
   }
 }
+
+class Comment {
+  getComments = async (req: Request, res: Response) => {
+    try {
+      const { id } = req.body
+
+      //console.log(id)
+      const { data, error } = await supabase
+        .from('comment')
+        .select()
+        .eq('question_fk', id)
+
+      if (error) {
+        console.log(error)
+        throw new Error("");
+
+      }
+      return res.json(data).status(200)
+
+    } catch (error) {
+      console.log(error)
+    }
+
+
+
+
+  }
+  writeComment = async (req: Request, res: Response) => {
+    try {
+      const { id, content } = req.body
+
+      //console.log(id, content)
+
+      const { data, error } = await supabase
+        .from('comment')
+        .insert({ 'question_fk': id, 'content': content})
+        .select()
+
+
+      if (error) {
+        console.log(error)
+        throw new Error("");
+
+      }
+      return res.status(200).json(data)
+
+    } catch (error) {
+      console.log(error)
+    }
+
+  }
+}
 const question = new Question()
+const comment = new Comment()
 //endpoints
 
-app.post('/create', question.create)
-
-app.delete('/delete', question.delete)
 
 app.get('/', (req: Request, res: Response) => {
   res.status(200).json({ "message": "working" })
 })
 
+app.post('/create', question.create)
+app.delete('/delete', question.delete)
 app.get('/question', question.getRandomQuestion);
-
 app.patch('/vote', question.vote);
 app.get('/specificquestion', question.getQuestion);
+app.get('/comment', comment.getComments)
+app.post('/comment', comment.writeComment)
 
 
 app.listen(port, () => {
   console.log(`Yep! ${port}`)
 })
-
