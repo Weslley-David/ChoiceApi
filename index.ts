@@ -156,6 +156,9 @@ app.get('/', (req: Request, res: Response) => {
   res.status(200).json({ "message": "working" })
 })
 
+
+
+
 app.post('/create', question.create)
 app.delete('/delete', question.delete)
 app.get('/question', question.getRandomQuestion);
