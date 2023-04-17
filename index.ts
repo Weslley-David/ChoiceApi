@@ -164,7 +164,6 @@ app.get('/specificquestion', question.getQuestion);
 app.get('/comment/:id', comment.getComments)
 app.post('/comment', comment.writeComment)
 
-
 app.listen(port, () => {
   console.log(`Yep! ${port}`)
 })
