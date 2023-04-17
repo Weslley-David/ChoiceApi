@@ -101,7 +101,7 @@ class Question {
 class Comment {
   getComments = async (req: Request, res: Response) => {
     try {
-      const { id } = req.body
+      const { id } = req.params
 
       //console.log(id)
       const { data, error } = await supabase
@@ -111,7 +111,8 @@ class Comment {
 
       if (error) {
         console.log(error)
-        throw new Error("");
+        return res.status(400)
+        //throw new Error("");
 
       }
       return res.json(data).status(200)
@@ -160,7 +161,7 @@ app.delete('/delete', question.delete)
 app.get('/question', question.getRandomQuestion);
 app.patch('/vote', question.vote);
 app.get('/specificquestion', question.getQuestion);
-app.get('/comment', comment.getComments)
+app.get('/comment/:id', comment.getComments)
 app.post('/comment', comment.writeComment)
 
 
