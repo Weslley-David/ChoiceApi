@@ -61,6 +61,22 @@ class Question {
 
     res.status(200).json(data)
   }
+
+  getAllQuestion = async (req: Request, res: Response) => {
+    try {
+    const { data, error } = await supabase.from('question').select("*")
+    res.status(200).json(data)
+    if (error) {
+      console.log(error)
+      throw new Error("get error");
+    }  
+    } catch (error) {
+      return res.status(400)
+    }
+  }
+
+
+
   vote = async (req: Request, res: Response) => {
     try {
       const { id, option } = req.body
@@ -157,6 +173,7 @@ app.get('/', (req: Request, res: Response) => {
 })
 
 app.post('/create', question.create)
+app.get('/questions', question.getAllQuestion)
 app.delete('/delete', question.delete)
 app.get('/question', question.getRandomQuestion);
 app.patch('/vote', question.vote);
