@@ -2,7 +2,7 @@
 FROM node:18
 
 # Define o diretório de trabalho como /app
-WORKDIR /.
+WORKDIR /src
 
 # Copia o package.json e o package-lock.json (se existir)
 COPY package*.json ./
@@ -17,5 +17,5 @@ COPY . .
 EXPOSE 3000
 
 # Define o comando que será executado quando o contêiner for iniciado
-CMD [ "npx", "ts-node", "index.ts" ]
+CMD [ "npx", "ts-node", "src/index.ts" ]
 
