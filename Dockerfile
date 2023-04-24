@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 3000
 
 # Define o comando que será executado quando o contêiner for iniciado
-CMD [ "npx", "ts-node", "src/index.ts" ]
+CMD [ "npx", "ts-node", "./index.ts" ]
